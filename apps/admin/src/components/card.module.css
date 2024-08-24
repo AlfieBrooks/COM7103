@@ -40,11 +40,11 @@
   margin-bottom: rem(5px);
 }
 
-.bodyText {
-  color: var(--mantine-color-dark-2);
-  margin-left: rem(7px);
-}
-
 .author {
   color: var(--mantine-color-dark-2);
+}
+
+.date {
+  color: var(--mantine-color-dark-2);
+  margin-left: rem(7px);
 }

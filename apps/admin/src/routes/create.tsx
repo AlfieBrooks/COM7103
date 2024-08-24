@@ -1,12 +1,23 @@
 import React from "react";
 import { Container } from "@mantine/core";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { TextInput, Textarea, Group, Title, Button } from "@mantine/core";
 import { TagsInput } from "@mantine/core";
 
 import { useForm } from "@mantine/form";
+import { withAuthenticationRequired } from "@auth0/auth0-react";
 
 export const Route = createFileRoute("/create")({
+  beforeLoad: ({ context, location }) => {
+    if (!context.auth.isAuthenticated) {
+      throw redirect({
+        to: "/",
+        search: {
+          redirect: location.href,
+        },
+      });
+    }
+  },
   component: Create,
 });
 

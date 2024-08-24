@@ -1,6 +1,6 @@
 import React from "react";
-import { IconEye, IconMessageCircle } from "@tabler/icons-react";
-import { Card, Text, Group, Center, rem, useMantineTheme } from "@mantine/core";
+import { Card, Text, Group, Center } from "@mantine/core";
+import { Link } from "@tanstack/react-router";
 import classes from "./card.module.css";
 
 export function ImageCard({
@@ -13,16 +13,14 @@ export function ImageCard({
   author: string;
   image: string;
   date: string;
-}) {
-  const theme = useMantineTheme();
-
+}): JSX.Element {
   return (
     <Card
       p="lg"
       shadow="lg"
       className={classes.card}
       radius="md"
-      component="a"
+      component={Link}
       href="https://mantine.dev/"
       target="_blank"
     >
@@ -48,7 +46,7 @@ export function ImageCard({
             <Group gap="lg">
               <Center>
                 {/* <IconEye style={{ width: rem(16), height: rem(16) }} stroke={1.5} color={theme.colors.dark[2]} /> */}
-                <Text size="sm" className={classes.bodyText}>
+                <Text size="sm" className={classes.date}>
                   {date}
                 </Text>
               </Center>

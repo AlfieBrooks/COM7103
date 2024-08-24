@@ -11,10 +11,16 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as MyRecipesImport } from './routes/my-recipes'
 import { Route as CreateImport } from './routes/create'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const MyRecipesRoute = MyRecipesImport.update({
+  path: '/my-recipes',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const CreateRoute = CreateImport.update({
   path: '/create',
@@ -44,12 +50,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreateImport
       parentRoute: typeof rootRoute
     }
+    '/my-recipes': {
+      id: '/my-recipes'
+      path: '/my-recipes'
+      fullPath: '/my-recipes'
+      preLoaderRoute: typeof MyRecipesImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({ IndexRoute, CreateRoute })
+export const routeTree = rootRoute.addChildren({
+  IndexRoute,
+  CreateRoute,
+  MyRecipesRoute,
+})
 
 /* prettier-ignore-end */
 
@@ -60,7 +77,8 @@ export const routeTree = rootRoute.addChildren({ IndexRoute, CreateRoute })
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/create"
+        "/create",
+        "/my-recipes"
       ]
     },
     "/": {
@@ -68,6 +86,9 @@ export const routeTree = rootRoute.addChildren({ IndexRoute, CreateRoute })
     },
     "/create": {
       "filePath": "create.tsx"
+    },
+    "/my-recipes": {
+      "filePath": "my-recipes.tsx"
     }
   }
 }

@@ -5,18 +5,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CardGrid } from "../components/grid";
 
 export const Route = createFileRoute("/")({
-  component: App,
+  component: Index,
 });
 
-function App(): JSX.Element {
+function Index(): JSX.Element {
   return (
-    <>
-      <Container>
-        <Title order={1}>Homepage</Title>
-        <CardGrid />
-      </Container>
-    </>
+    <Container>
+      <Title order={2}>Homepage</Title>
+      <CardGrid />
+    </Container>
   );
 }
 
-export default App;
+export default Index;
