@@ -1,22 +1,32 @@
-import { json, urlencoded } from "body-parser";
-import express, { type Express } from "express";
-import morgan from "morgan";
-import cors from "cors";
+import fastify from "fastify";
+import fastifyCors from '@fastify/cors';
+import fastifySupabase from 'fastify-supabase';
 
-export const createServer = (): Express => {
-  const app = express();
-  app
-    .disable("x-powered-by")
-    .use(morgan("dev"))
-    .use(urlencoded({ extended: true }))
-    .use(json())
-    .use(cors())
-    .get("/message/:name", (req, res) => {
-      return res.json({ message: `hello ${req.params.name}` });
-    })
-    .get("/status", (_, res) => {
-      return res.json({ ok: true });
-    });
+const main = async () => {
+  const server = fastify({ logger: true });
 
-  return app;
+  // Now we setup our server, plugins and such
+  await server.register(fastifyCors, { origin: '*' });
+  await server.register(fastifySupabase, {
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseKey: process.env.SUPABASE_KEY,
+  });
+
+  // Json Schemas
+  // server.addSchema(paginationSchema);
+  // server.addSchema(paramIdSchema);
+  // server.addSchema(messageSchema);
+
+  // server.addSchema(categorySchema);
+  // server.addSchema(productSchema);
+
+  // API Endpoint routes
+  await server.register(async api => {
+    api.register(categoriesRoutes, { prefix: "/recipes" });
+    api.register(productsRoutes, { prefix: "/products" });
+  }, { prefix: "/api/v1" });
+
+  return server;
 };
+
+export { main };

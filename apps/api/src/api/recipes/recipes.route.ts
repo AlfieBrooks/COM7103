@@ -1,0 +1,20 @@
+import type { FastifyInstance } from "fastify";
+import { createCategory, deleteCategory, getCategories, getCategory, updateCategory } from "./recipes.controller";
+import { createSchema, deleteSchema, getAllSchema, getSchema, updateSchema } from "./recipes.schema";
+
+export default async function (fastify: FastifyInstance) {
+  // List all categories, paginated
+  fastify.get('/', { schema: getAllSchema }, getCategories);
+
+  // Get one category
+  fastify.get('/:id', { schema: getSchema }, getCategory);
+
+  // Deleteing a Category
+  fastify.delete('/:id', { schema: deleteSchema }, deleteCategory);
+
+  // Create a new Category
+  fastify.post('/', { schema: createSchema }, createCategory);
+
+  // Update an existing Category
+  fastify.put('/:id', { schema: updateSchema }, updateCategory);
+}
