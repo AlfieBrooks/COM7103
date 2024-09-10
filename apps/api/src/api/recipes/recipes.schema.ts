@@ -12,13 +12,13 @@
 // GET '/'
 export const getAllSchema = {
   querystring: { $ref: 'paginationSchema' },
-  tags: ['categories'],
-  description: 'List all categories, paginated using a cursor paginator.',
+  tags: ['recipes'],
+  description: 'List all recipes, paginated using a cursor paginator.',
   response: {
     200: {
       type: 'object',
       properties: {
-        results: { type: 'array', items: { $ref: 'categorySchema#' } },
+        results: { type: 'array', items: { $ref: 'recipeSchema#' } },
       }
     },
     404: { $ref: 'messageResponseSchema#' },
@@ -28,10 +28,10 @@ export const getAllSchema = {
 // GET '/:id'
 export const getSchema = {
   params: { $ref: 'paramIdSchema' },
-  tags: ['categories'],
-  description: 'Get a single category)',
+  tags: ['recipes'],
+  description: 'Get a single recipe',
   response: {
-    200: { $ref: 'categorySchema#' },
+    200: { $ref: 'recipeSchema#' },
     404: { $ref: 'messageResponseSchema#' },
   }
 };
@@ -39,8 +39,8 @@ export const getSchema = {
 // DELETE '/:id'
 export const deleteSchema = {
   params: { $ref: 'paramIdSchema' },
-  tags: ['categories'],
-  description: 'Removes an especific cateory from the collection',
+  tags: ['recipes'],
+  description: 'Removes an specific recipe from the collection',
   response: {
     200: { $ref: 'messageResponseSchema#' },
     404: { $ref: 'messageResponseSchema#' },
@@ -49,8 +49,8 @@ export const deleteSchema = {
 
 // POST '/'
 export const createSchema = {
-  tags: ['categories'],
-  description: 'Creates a new Category',
+  tags: ['recipes'],
+  description: 'Creates a new recipe',
   body: {
     type: 'object',
     required: ['name'],
@@ -59,15 +59,15 @@ export const createSchema = {
     }
   },
   response: {
-    200: { $ref: 'categorySchema#' },
+    200: { $ref: 'recipeSchema#' },
     404: { $ref: 'messageResponseSchema#' },
   }
 };
 
 // PUT: '/:id'
 export const updateSchema = {
-  tags: ['categories'],
-  description: 'Updates a Category',
+  tags: ['recipes'],
+  description: 'Updates a recipe',
   params: { $ref: 'paramIdSchema#' },
   body: {
     type: 'object',
@@ -77,7 +77,7 @@ export const updateSchema = {
     }
   },
   response: {
-    200: { $ref: 'categorySchema#' },
+    200: { $ref: 'recipeSchema#' },
     404: { $ref: 'messageResponseSchema#' },
   }
 };
