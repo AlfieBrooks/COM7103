@@ -1,21 +1,23 @@
-import type { FastifyInstance } from "fastify";
-import { verifyApiKey } from "../../utils/verify";
-import { createRecipe, deleteRecipe, getRecipes, getRecipe, updateRecipe } from "./recipes.controller";
-import { createSchema, deleteSchema, getAllSchema, getSchema, updateSchema } from "./recipes.schema";
+import type { FastifyInstance } from 'fastify';
+import { createRecipe, deleteRecipe, getRecipes, getRecipe, getUserRecipes, updateRecipe } from './recipes.controller';
+import { createSchema, deleteSchema, getAllSchema, getSchema, updateSchema } from './recipes.schema';
 
-export const recipesRoutes = (fastify: FastifyInstance) => {
-  // List all categories, paginated
-  fastify.get('/', { schema: getAllSchema, onRequest: [verifyApiKey] }, getRecipes);
+export const recipesRoutes = async (fastify: FastifyInstance) => {
+  // List all Recipes, paginated
+  fastify.get('/', { schema: getAllSchema }, getRecipes);
 
   // Get one Recipe
-  fastify.get('/:id', { schema: getSchema, onRequest: [verifyApiKey] }, getRecipe);
+  fastify.get('/:id', { schema: getSchema }, getRecipe);
 
-  // Deleteing a Category
-  fastify.delete('/:id', { schema: deleteSchema, onRequest: [verifyApiKey] }, deleteRecipe);
+  // List all of a given users Recipes
+  fastify.get('/user', { schema: getAllSchema, onRequest: [fastify.authenticate] }, getUserRecipes);
+
+  // Deleting a Recipe
+  fastify.delete('/:id', { schema: deleteSchema, onRequest: [fastify.authenticate] }, deleteRecipe);
 
   // Create a new Recipe
-  fastify.post('/', { schema: createSchema, onRequest: [verifyApiKey] }, createRecipe);
+  fastify.post('/', { schema: createSchema, onRequest: [fastify.authenticate] }, createRecipe);
 
   // Update an existing Recipe
-  fastify.put('/:id', { schema: updateSchema, onRequest: [verifyApiKey] }, updateRecipe);
-}
+  fastify.put('/:id', { schema: updateSchema, onRequest: [fastify.authenticate] }, updateRecipe);
+};

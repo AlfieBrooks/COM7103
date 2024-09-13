@@ -1,10 +1,11 @@
-import fastify from "fastify";
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
-import fastifyJWT from "@fastify/jwt";
-import fastifySupabase from "@psteinroe/fastify-supabase";
-import { recipesRoutes } from "./api/recipes/recipes.route";
-import { recipeSchema } from "./utils/models.schema";
-import { messageSchema, paginationSchema, paramIdSchema } from "./utils/common.schema";
+import fastifyJWT from '@fastify/jwt';
+import fastifySupabase from '@psteinroe/fastify-supabase';
+import { recipesRoutes } from './api/recipes/recipes.route';
+import { recipeSchema } from './utils/models.schema';
+import { errorSchema, messageSchema, paginationSchema, paramIdSchema } from './utils/common.schema';
 
 const main = async () => {
   const server = fastify({ logger: true });
@@ -17,27 +18,33 @@ const main = async () => {
   await server.register(fastifySupabase, {
     url: process.env.SUPABASE_URL,
     anonKey: process.env.SUPABASE_ANON_KEY,
-    // serviceKey: process.env.SUPABASE_SERVICE_KEY,
-    // you can pass any `SupabaseClientOptions`
+    serviceKey: process.env.SUPABASE_SERVICE_KEY,
     options: {},
-    // supabaseUrl: process.env.SUPABASE_URL,
-    // supabaseKey: process.env.SUPABASE_KEY,
   });
 
+  server.decorate('authenticate', async function (request: FastifyRequest, reply: FastifyReply) {
+    try {
+      await request.jwtVerify();
+    } catch (err) {
+      reply.send(err);
+    }
+  });
 
   // Json Schemas
   server.addSchema(paginationSchema);
   server.addSchema(paramIdSchema);
   server.addSchema(messageSchema);
+  server.addSchema(errorSchema);
 
   server.addSchema(recipeSchema);
-  // server.addSchema(productSchema);
 
   // API Endpoint routes
-  await server.register(async api => {
-    api.register(recipesRoutes, { prefix: "/recipes" });
-    // api.register(productsRoutes, { prefix: "/products" });
-  }, { prefix: "/api/v1" });
+  await server.register(
+    async (api) => {
+      api.register(recipesRoutes, { prefix: '/recipes' });
+    },
+    { prefix: '/api/v1' },
+  );
 
   return server;
 };

@@ -1,17 +1,16 @@
-import React from "react";
-import { Container } from "@mantine/core";
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { TextInput, Textarea, Group, Title, Button } from "@mantine/core";
-import { TagsInput } from "@mantine/core";
+import React from 'react';
+import { Container } from '@mantine/core';
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { TextInput, Textarea, Group, Title, Button } from '@mantine/core';
+import { TagsInput } from '@mantine/core';
 
-import { useForm } from "@mantine/form";
-import { withAuthenticationRequired } from "@auth0/auth0-react";
+import { useForm } from '@mantine/form';
 
-export const Route = createFileRoute("/create")({
+export const Route = createFileRoute('/create')({
   beforeLoad: ({ context, location }) => {
-    if (!context.auth.isAuthenticated) {
+    if (!context.auth) {
       throw redirect({
-        to: "/",
+        to: '/',
         search: {
           redirect: location.href,
         },
@@ -24,9 +23,9 @@ export const Route = createFileRoute("/create")({
 function Create(): JSX.Element {
   const form = useForm({
     initialValues: {
-      title: "",
-      ingredients: ["1 Onion", "2 Tomatoes"],
-      instructions: "",
+      title: '',
+      ingredients: ['1 Onion', '2 Tomatoes'],
+      instructions: '',
     },
     // validate: {
     //   title: (value) => value.trim().length === 0,
@@ -46,7 +45,7 @@ function Create(): JSX.Element {
           mt="md"
           name="title"
           variant="filled"
-          {...form.getInputProps("title")}
+          {...form.getInputProps('title')}
         />
         {/* <TextInput
           label="Ingredients"
@@ -62,7 +61,7 @@ function Create(): JSX.Element {
           placeholder="Enter ingredient"
           maxTags={30}
           clearable
-          {...form.getInputProps("ingredients")}
+          {...form.getInputProps('ingredients')}
         />
         <Textarea
           mt="md"
@@ -73,7 +72,7 @@ function Create(): JSX.Element {
           autosize
           name="instructions"
           variant="filled"
-          {...form.getInputProps("instructions")}
+          {...form.getInputProps('instructions')}
         />
 
         <Group justify="center" mt="xl">

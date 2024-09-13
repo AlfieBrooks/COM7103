@@ -1,13 +1,13 @@
 /*
-* Schemas used for Validation and Validation and Serialization of our routes/endpoints
-*
-* These are used to:
-*  - Validate incoming requests (URL params, body, headers, query string)
-*  - Automatically serialize the response objects
-*  - Also, Swagger uses these schemas to generate the documentation!
-*
-* See More: https://www.fastify.io/docs/latest/Reference/Validation-and-Serialization/
-*/
+ * Schemas used for Validation and Validation and Serialization of our routes/endpoints
+ *
+ * These are used to:
+ *  - Validate incoming requests (URL params, body, headers, query string)
+ *  - Automatically serialize the response objects
+ *  - Also, Swagger uses these schemas to generate the documentation!
+ *
+ * See More: https://www.fastify.io/docs/latest/Reference/Validation-and-Serialization/
+ */
 
 // GET '/'
 export const getAllSchema = {
@@ -18,8 +18,9 @@ export const getAllSchema = {
     200: {
       type: 'object',
       properties: {
-        results: { type: 'array', items: { $ref: 'recipeSchema#' } },
-      }
+        data: { type: 'array', items: { $ref: 'recipeSchema#' } },
+        error: { $ref: 'errorResponseSchema#' },
+      },
     },
     404: { $ref: 'messageResponseSchema#' },
   },
@@ -31,9 +32,15 @@ export const getSchema = {
   tags: ['recipes'],
   description: 'Get a single recipe',
   response: {
-    200: { $ref: 'recipeSchema#' },
+    200: {
+      type: 'object',
+      properties: {
+        data: { $ref: 'recipeSchema#' },
+        error: { $ref: 'errorResponseSchema#' },
+      },
+    },
     404: { $ref: 'messageResponseSchema#' },
-  }
+  },
 };
 
 // DELETE '/:id'
@@ -42,9 +49,15 @@ export const deleteSchema = {
   tags: ['recipes'],
   description: 'Removes an specific recipe from the collection',
   response: {
-    200: { $ref: 'messageResponseSchema#' },
+    200: {
+      type: 'object',
+      properties: {
+        data: { $ref: 'recipeSchema#' },
+        error: { $ref: 'errorResponseSchema#' },
+      },
+    },
     404: { $ref: 'messageResponseSchema#' },
-  }
+  },
 };
 
 // POST '/'
@@ -53,15 +66,23 @@ export const createSchema = {
   description: 'Creates a new recipe',
   body: {
     type: 'object',
-    required: ['name'],
+    required: ['title'],
     properties: {
-      name: { type: 'string' }
-    }
+      title: { type: 'string' },
+      ingredients: { type: 'array', items: { type: 'string' } },
+      instructions: { type: 'string' },
+    },
   },
   response: {
-    200: { $ref: 'recipeSchema#' },
+    200: {
+      type: 'object',
+      properties: {
+        data: { $ref: 'recipeSchema#' },
+        error: { $ref: 'errorResponseSchema#' },
+      },
+    },
     404: { $ref: 'messageResponseSchema#' },
-  }
+  },
 };
 
 // PUT: '/:id'
@@ -71,13 +92,21 @@ export const updateSchema = {
   params: { $ref: 'paramIdSchema#' },
   body: {
     type: 'object',
-    required: ['name'],
+    required: ['title'],
     properties: {
-      name: { type: 'string' }
-    }
+      title: { type: 'string' },
+      ingredients: { type: 'array', items: { type: 'string' } },
+      instructions: { type: 'string' },
+    },
   },
   response: {
-    200: { $ref: 'recipeSchema#' },
+    200: {
+      type: 'object',
+      properties: {
+        data: { $ref: 'recipeSchema#' },
+        error: { $ref: 'errorResponseSchema#' },
+      },
+    },
     404: { $ref: 'messageResponseSchema#' },
-  }
+  },
 };

@@ -1,14 +1,13 @@
-import React from "react";
-import { Container } from "@mantine/core";
-import { Title } from "@mantine/core";
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { CardGrid } from "../components/grid";
+import React from 'react';
+import { Container, Title } from '@mantine/core';
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { CardGrid } from '../components/grid';
 
-export const Route = createFileRoute("/my-recipes")({
+export const Route = createFileRoute('/my-recipes')({
   beforeLoad: ({ context, location }) => {
-    if (!context.auth.isAuthenticated) {
+    if (!context.auth) {
       throw redirect({
-        to: "/",
+        to: '/',
         search: {
           redirect: location.href,
         },

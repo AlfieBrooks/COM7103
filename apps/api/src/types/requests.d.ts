@@ -1,55 +1,40 @@
 /*
-* Some types used mostly to extract data from:
-* - Request parameters
-* - POST body
-* - Query string
-*/
+ * Some types used mostly to extract data from:
+ * - Request parameters
+ * - POST body
+ * - Query string
+ */
 
 interface CrudAllRequest {
   Querystring: {
-    take: number;
-    from?: string;
-  }
+    to: number;
+    from?: number;
+  };
 }
 
 interface CrudIdRequest {
   Params: {
     id: string;
-  }
+  };
 }
 
-interface PostCategory {
+interface PostRecipe {
   Body: {
+    userId: string;
     title: string;
-  }
+    ingredients: string[];
+    instructions: string;
+  };
 }
 
-interface PutCategory {
+interface PutRecipe {
   Body: {
+    userId: string;
     title: string;
-  }
+    ingredients: string[];
+    instructions: string;
+  };
   Params: {
     id: string;
-  }
-}
-
-interface PostProduct {
-  Body: {
-    title: string;
-    published: boolean;
-    price: number;
-    categoryId: string;
-  }
-}
-
-interface PutProduct {
-  Body: {
-    title: string;
-    published: boolean;
-    price: number;
-    categoryId: string;
-  }
-  Params: {
-    id: string;
-  }
+  };
 }

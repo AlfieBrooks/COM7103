@@ -1,9 +1,13 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 
 export async function getRecipes(request: FastifyRequest<CrudAllRequest>, reply: FastifyReply) {
-  const { take, from } = request.query;
+  const { from, to } = request.query;
 
-  const { data, error } = await request.server.supabaseClient.from('initial_recipes').select()
+  const { data, error } = await request.server.supabaseClient
+    .from('initial_recipes')
+    .select('*', { count: 'exact' })
+    .order('id', { ascending: true })
+    .range(from ?? 0, to);
 
   // const results = await request.server.prisma.category.findMany({
   //   cursor: from ? { id: from } : undefined,
@@ -12,9 +16,9 @@ export async function getRecipes(request: FastifyRequest<CrudAllRequest>, reply:
   //   orderBy: { id: 'desc' }
   // });
 
-  // if (results.length === 0) {
-  //   return reply.status(404).send({ message: "No elements found" });
-  // }
+  if (data?.length === 0) {
+    return reply.status(404).send({ message: 'No items found' });
+  }
 
   return reply.status(200).send({ data, error });
 }
@@ -22,11 +26,36 @@ export async function getRecipes(request: FastifyRequest<CrudAllRequest>, reply:
 export async function getRecipe(request: FastifyRequest<CrudIdRequest>, reply: FastifyReply) {
   const { id } = request.params;
 
-  const { data, error } = await request.server.supabaseClient.from('initial_recipes').select().eq('id', id)
+  const { data, error } = await request.server.supabaseClient.from('initial_recipes').select().eq('id', id);
 
-  // if (!category) {
-  //   return reply.status(404).send({ message: 'Category not found' });
-  // }
+  const recipe = data?.[0];
+  if (!recipe) {
+    return reply.status(404).send({ message: 'Recipe not found' });
+  }
+
+  return reply.status(200).send({ data: recipe, error });
+}
+
+export async function getUserRecipes(request: FastifyRequest<CrudAllRequest>, reply: FastifyReply) {
+  const { from, to } = request.query;
+
+  const { data, error } = await request.server.supabaseClient
+    .from('initial_recipes')
+    .select('*')
+    .eq('user_id', request.supabaseUser.sub)
+    .order('id', { ascending: true })
+    .range(from ?? 0, to);
+
+  // const results = await request.server.prisma.category.findMany({
+  //   cursor: from ? { id: from } : undefined,
+  //   skip: from ? 1 : undefined,
+  //   take,
+  //   orderBy: { id: 'desc' }
+  // });
+
+  if (data?.length === 0) {
+    return reply.status(404).send({ message: 'No items found' });
+  }
 
   return reply.status(200).send({ data, error });
 }
@@ -34,40 +63,39 @@ export async function getRecipe(request: FastifyRequest<CrudIdRequest>, reply: F
 export async function deleteRecipe(request: FastifyRequest<CrudIdRequest>, reply: FastifyReply) {
   const { id } = request.params;
 
-  const { data, error } = await request.server.supabaseClient.from('initial_recipes').delete().eq('id', id).select()
+  const { data, error } = await request.server.supabaseClient.from('initial_recipes').delete().eq('id', id).select();
 
-  // await request.server.prisma.category.delete({
-  //   where: { id },
-  // });
-
-  return reply.status(200).send({ data, error });
+  const recipe = data?.[0];
+  if (!recipe) {
+    return reply.status(404).send({ message: 'Recipe not found' });
+  }
+  return reply.status(200).send({ data: recipe, error });
 }
 
-export async function createRecipe(request: FastifyRequest<PostCategory>, reply: FastifyReply) {
-  const { data, error } = await request.server.supabaseClient.from('initial_recipes').insert(request.body)
-
-  // const category = await request.server.prisma.category.create({
-  //   data: {
-  //     name,
-  //   }
-  // });
+export async function createRecipe(request: FastifyRequest<PostRecipe>, reply: FastifyReply) {
+  const { data, error } = await request.server.supabaseClient
+    .from('initial_recipes')
+    .insert({
+      ...request.body,
+      user_id: request.supabaseUser.sub,
+    })
+    .select();
 
   return reply.status(201).send({ data, error });
-
 }
 
-export async function updateRecipe(request: FastifyRequest<PutCategory>, reply: FastifyReply) {
-  // const { title } = request.body;
+export async function updateRecipe(request: FastifyRequest<PutRecipe>, reply: FastifyReply) {
   const { id } = request.params;
 
-  const { data, error } = await request.server.supabaseClient.from('initial_recipes').update(request.body).eq('id', id).select()
+  const { data, error } = await request.server.supabaseClient
+    .from('initial_recipes')
+    .update(request.body)
+    .eq('id', id)
+    .select();
 
-
-  // const category = await request.server.prisma.category.update({
-  //   where: { id },
-  //   data: { name },
-  // });
-
-  return reply.status(200).send({ data, error });
-
+  const recipe = data?.[0];
+  if (!recipe) {
+    return reply.status(404).send({ message: 'Recipe not found' });
+  }
+  return reply.status(200).send({ data: recipe, error });
 }

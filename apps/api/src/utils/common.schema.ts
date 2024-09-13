@@ -1,8 +1,8 @@
 /*
-* Simple global schemas that are going to be used across all of our app.
-*
-* See More: https://www.fastify.io/docs/latest/Reference/Validation-and-Serialization/
-*/
+ * Simple global schemas that are going to be used across all of our app.
+ *
+ * See More: https://www.fastify.io/docs/latest/Reference/Validation-and-Serialization/
+ */
 
 // Cursor Pagination: take and from values.
 // - from must match the MongoDB document id pattern
@@ -10,15 +10,28 @@ export const paginationSchema = {
   $id: 'paginationSchema',
   type: 'object',
   properties: {
-    take: {
+    to: {
       type: 'number',
       enum: [5, 10, 25],
       default: 10,
     },
     from: {
       type: 'string',
-      pattern: '^[0-9a-fA-F]{24}$',
+      pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
     },
+  },
+};
+
+// Error response
+export const errorSchema = {
+  $id: 'errorResponseSchema',
+  type: 'object',
+  nullable: true,
+  properties: {
+    message: { type: 'string' },
+    details: { type: 'string' },
+    hint: { type: 'string' },
+    code: { type: 'string' },
   },
 };
 
@@ -36,7 +49,7 @@ export const paramIdSchema = {
   $id: 'paramIdSchema',
   type: 'object',
   properties: {
-    id: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' },
+    id: { type: 'string', pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' },
   },
   required: ['id'],
 };

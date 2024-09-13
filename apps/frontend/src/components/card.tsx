@@ -1,7 +1,7 @@
-import React from "react";
-import { Card, Text, Group, Center } from "@mantine/core";
-import { Link } from "@tanstack/react-router";
-import classes from "./card.module.css";
+import React from 'react';
+import { Card, Text, Group, Center } from '@mantine/core';
+import { Link } from '@tanstack/react-router';
+import classes from './card.module.css';
 
 export function ImageCard({
   title,
