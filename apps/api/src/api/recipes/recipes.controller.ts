@@ -3,7 +3,7 @@ import type { FastifyRequest, FastifyReply } from 'fastify';
 export async function getRecipes(request: FastifyRequest<CrudAllRequest>, reply: FastifyReply) {
   const { from, to } = request.query;
 
-  const { data, error } = await request.server.supabaseClient
+  const { data, count, error } = await request.server.supabaseClient
     .from('initial_recipes')
     .select('*', { count: 'exact' })
     .order('id', { ascending: true })
@@ -20,7 +20,7 @@ export async function getRecipes(request: FastifyRequest<CrudAllRequest>, reply:
     return reply.status(404).send({ message: 'No items found' });
   }
 
-  return reply.status(200).send({ data, error });
+  return reply.status(200).send({ data, count, error });
 }
 
 export async function getRecipe(request: FastifyRequest<CrudIdRequest>, reply: FastifyReply) {
@@ -39,10 +39,10 @@ export async function getRecipe(request: FastifyRequest<CrudIdRequest>, reply: F
 export async function getUserRecipes(request: FastifyRequest<CrudAllRequest>, reply: FastifyReply) {
   const { from, to } = request.query;
 
-  const { data, error } = await request.server.supabaseClient
+  const { data, count, error } = await request.server.supabaseClient
     .from('initial_recipes')
-    .select('*')
-    .eq('user_id', request.supabaseUser.sub)
+    .select('*', { count: 'exact' })
+    .eq('userId', request.supabaseUser.sub)
     .order('id', { ascending: true })
     .range(from ?? 0, to);
 
@@ -57,7 +57,7 @@ export async function getUserRecipes(request: FastifyRequest<CrudAllRequest>, re
     return reply.status(404).send({ message: 'No items found' });
   }
 
-  return reply.status(200).send({ data, error });
+  return reply.status(200).send({ data, count, error });
 }
 
 export async function deleteRecipe(request: FastifyRequest<CrudIdRequest>, reply: FastifyReply) {
@@ -77,7 +77,7 @@ export async function createRecipe(request: FastifyRequest<PostRecipe>, reply: F
     .from('initial_recipes')
     .insert({
       ...request.body,
-      user_id: request.supabaseUser.sub,
+      userId: request.supabaseUser.sub,
     })
     .select();
 

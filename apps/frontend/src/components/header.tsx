@@ -10,8 +10,8 @@ import { supabase } from '../main';
 const links = [
   { link: '/', label: 'Home', authProtected: false },
   { link: '/recipes', label: 'Recipes', authProtected: false },
-  { link: '/my-recipes', label: 'My Recipes', authProtected: true },
-  { link: '/create', label: 'Create', authProtected: true },
+  { link: '/recipes/mine', label: 'My Recipes', authProtected: true },
+  { link: '/recipes/create', label: 'Create', authProtected: true },
 ];
 
 export function Header({ user }: { user: {} }): JSX.Element {

@@ -2,6 +2,7 @@ import React from 'react';
 import { SimpleGrid, Container } from '@mantine/core';
 // import classes from "./grid.module.css";
 import { ImageCard } from './card';
+import { Recipe } from '../types/recipes';
 
 const mockdata = [
   {
@@ -38,9 +39,10 @@ const mockdata = [
 // https://images.unsplash.com/photo-1703848747157-830cab9e178a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
 // https://images.unsplash.com/photo-1514944617518-12c7891ec602?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
 
-export function CardGrid() {
-  const cards = mockdata.map((recipe) => (
-    <ImageCard key={recipe.title} title={recipe.title} author={recipe.author} image={recipe.image} date={recipe.date} />
+export function CardGrid({ recipes }: { recipes: Recipe[] }): JSX.Element {
+  const cards = recipes.map((recipe) => (
+    // <ImageCard key={recipe.title} title={recipe.title} author={recipe.author} image={recipe.image} date={recipe.date} />
+    <ImageCard key={recipe.id} id={recipe.id} title={recipe.title} date={recipe.createdAt} />
   ));
 
   return (

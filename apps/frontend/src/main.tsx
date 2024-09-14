@@ -1,19 +1,25 @@
 import React, { StrictMode, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { MantineProvider } from '@mantine/core';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, Session } from '@supabase/supabase-js';
 import { routeTree } from './routeTree.gen';
 
 import '@mantine/core/styles.css';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 
+const queryClient = new QueryClient();
+
 const router = createRouter({
   routeTree,
   defaultPreload: 'intent',
+  defaultPreloadStaleTime: 0,
   context: {
     auth: undefined!,
+    queryClient: queryClient,
   },
 });
 
@@ -25,11 +31,12 @@ declare module '@tanstack/react-router' {
 
 export const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
 
-function AppWIthAuth(): JSX.Element {
-  const [session, setSession] = useState(null);
+function AppWithAuth(): JSX.Element {
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Log ~ AppWithAuth ~ session:', session);
       setSession(session);
     });
 
@@ -42,7 +49,6 @@ function AppWIthAuth(): JSX.Element {
     return () => subscription.unsubscribe();
   }, []);
 
-  console.log('Log ~ AppWIthAuth ~ session:', session);
   if (!session) {
     return <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />;
   } else {
@@ -53,7 +59,10 @@ function AppWIthAuth(): JSX.Element {
 function App(): JSX.Element {
   return (
     <MantineProvider>
-      <AppWIthAuth />
+      <QueryClientProvider client={queryClient}>
+        <AppWithAuth />
+        <ReactQueryDevtools buttonPosition="bottom-right" />
+      </QueryClientProvider>
     </MantineProvider>
   );
 }

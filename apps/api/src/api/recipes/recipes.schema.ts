@@ -19,6 +19,7 @@ export const getAllSchema = {
       type: 'object',
       properties: {
         data: { type: 'array', items: { $ref: 'recipeSchema#' } },
+        count: { type: 'number' },
         error: { $ref: 'errorResponseSchema#' },
       },
     },

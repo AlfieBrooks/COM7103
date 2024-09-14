@@ -6,7 +6,7 @@ import { TagsInput } from '@mantine/core';
 
 import { useForm } from '@mantine/form';
 
-export const Route = createFileRoute('/create')({
+export const Route = createFileRoute('/recipes/create')({
   beforeLoad: ({ context, location }) => {
     if (!context.auth) {
       throw redirect({

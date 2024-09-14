@@ -34,17 +34,3 @@
   justify-content: flex-end;
   z-index: 1;
 }
-
-.title {
-  color: var(--mantine-color-white);
-  margin-bottom: rem(5px);
-}
-
-.author {
-  color: var(--mantine-color-dark-2);
-}
-
-.date {
-  color: var(--mantine-color-dark-2);
-  margin-left: rem(7px);
-}
