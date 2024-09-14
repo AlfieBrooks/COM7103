@@ -1,10 +1,9 @@
 import React from 'react';
-import { Container } from '@mantine/core';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { TextInput, Textarea, Group, Title, Button } from '@mantine/core';
-import { TagsInput } from '@mantine/core';
-
+import { Container, TextInput, Textarea, Group, Title, Button, TagsInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 
 export const Route = createFileRoute('/recipes/create')({
   beforeLoad: ({ context, location }) => {
@@ -21,24 +20,44 @@ export const Route = createFileRoute('/recipes/create')({
 });
 
 function Create(): JSX.Element {
+  const token = Route.useRouteContext().auth?.access_token;
   const form = useForm({
     initialValues: {
       title: '',
       ingredients: ['1 Onion', '2 Tomatoes'],
       instructions: '',
     },
-    // validate: {
-    //   title: (value) => value.trim().length === 0,
-    //   ingredients: (value) => value.trim().length === 0,
-    //   instructions: (value) => value.trim().length === 0,
-    // },
+    validate: {
+      title: (value) => value.trim().length === 0,
+      ingredients: (values) => values.length === 0,
+      instructions: (value) => value.trim().length === 0,
+    },
   });
+
+  const { mutateAsync } = useMutation({
+    mutationFn: async (recipe: typeof form.values) => {
+      try {
+        return await axios.post(`${import.meta.env.VITE_API_URL}/recipes`, recipe, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } catch (error) {
+        throw new Error('Failed to create recipe');
+      }
+    },
+  });
+
+  const handleSubmit = async (values: typeof form.values, event?: React.FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    await mutateAsync(values);
+  };
 
   return (
     <Container>
       <Title order={1}>Create Recipe</Title>
 
-      <form onSubmit={form.onSubmit(() => {})}>
+      <form onSubmit={form.onSubmit(handleSubmit)}>
         <TextInput
           label="Recipe Title"
           placeholder="Recipe Title"
@@ -47,14 +66,6 @@ function Create(): JSX.Element {
           variant="filled"
           {...form.getInputProps('title')}
         />
-        {/* <TextInput
-          label="Ingredients"
-          placeholder="Ingredients"
-          mt="md"
-          name="Ingredients"
-          variant="filled"
-          {...form.getInputProps("ingredients")}
-        /> */}
         <TagsInput
           label="Ingredient List"
           description="Press Enter to submit an ingredient, add up to 30 ingredients along with their quantities"
