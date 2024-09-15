@@ -1,7 +1,9 @@
+import pluginQuery from '@tanstack/eslint-plugin-query';
+
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
-  extends: ["@repo/eslint-config/react.js"],
-  parser: "@typescript-eslint/parser",
+  extends: ['@repo/eslint-config/react.js', 'plugin:@tanstack/eslint-plugin-query/recommended'],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     project: true,
   },

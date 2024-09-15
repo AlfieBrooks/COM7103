@@ -1,8 +1,7 @@
-import { createServer } from "./server";
+import { main } from './server';
 
-const port = process.env.PORT || 5001;
-const server = createServer();
-
-server.listen(port, () => {
-  // log(`api running on ${port}`);
-});
+main()
+  .catch((err) => {
+    console.log(err);
+    process.exit(1);
+  });

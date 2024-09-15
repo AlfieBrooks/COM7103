@@ -1,23 +1,32 @@
-import React, { useState } from "react";
-import { Container, Group, Burger, Button, Title, Avatar } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { Link } from "@tanstack/react-router";
-import { useAuth0 } from "@auth0/auth0-react";
-import { IconCherry } from "@tabler/icons-react";
+import React, { useState } from 'react';
+import { Container, Group, Burger, Button, Title, Avatar } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { Link } from '@tanstack/react-router';
+import { IconCherry } from '@tabler/icons-react';
 
-import classes from "./header.module.css";
+import classes from './header.module.css';
+import { supabase } from '../main';
 
 const links = [
-  { link: "/", label: "Home", authProtected: false },
-  { link: "/recipes", label: "Recipes", authProtected: false },
-  { link: "/my-recipes", label: "My Recipes", authProtected: true },
-  { link: "/create", label: "Create", authProtected: true },
+  { link: '/', label: 'Home', authProtected: false },
+  { link: '/recipes', label: 'Recipes', authProtected: false },
+  { link: '/recipes/mine', label: 'My Recipes', authProtected: true },
+  { link: '/recipes/create', label: 'Create', authProtected: true },
 ];
 
-export function Header(): JSX.Element {
+export function Header({ user }: { user: {} }): JSX.Element {
   const [opened, { toggle }] = useDisclosure(false);
   const [active, setActive] = useState(links[0].link);
-  const { loginWithRedirect, logout, user, isAuthenticated } = useAuth0();
+
+  // const signIn = async () => {
+  //   const { error } = await supabase.auth.signOut();
+  //   console.log("Log ~ signOut ~ error:", error);
+  // };
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    console.log('Log ~ signOut ~ error:', error);
+  };
 
   const items = links.map((link) => (
     <Link
@@ -49,16 +58,16 @@ export function Header(): JSX.Element {
         </Group>
 
         <Group justify="center" grow>
-          {!isAuthenticated && (
+          {!user && (
             <Button variant="default" onClick={() => loginWithRedirect()}>
               Log in
             </Button>
           )}
 
-          {isAuthenticated && user && (
+          {user && (
             <>
               <Avatar src={user.picture} alt={user.name}></Avatar>
-              <Button variant="default" onClick={() => logout({ returnTo: window.location.origin })}>
+              <Button variant="default" onClick={() => signOut()}>
                 Log out
               </Button>
             </>

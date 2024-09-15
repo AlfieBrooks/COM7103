@@ -1,22 +1,52 @@
-import { json, urlencoded } from "body-parser";
-import express, { type Express } from "express";
-import morgan from "morgan";
-import cors from "cors";
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import fastify from 'fastify';
+import fastifyCors from '@fastify/cors';
+import fastifyJWT from '@fastify/jwt';
+import fastifySupabase from '@psteinroe/fastify-supabase';
+import { recipesRoutes } from './api/recipes.route';
+import { recipeSchema } from './utils/models.schema';
+import { errorSchema, messageSchema, paginationSchema, paramIdSchema } from './utils/common.schema';
 
-export const createServer = (): Express => {
-  const app = express();
-  app
-    .disable("x-powered-by")
-    .use(morgan("dev"))
-    .use(urlencoded({ extended: true }))
-    .use(json())
-    .use(cors())
-    .get("/message/:name", (req, res) => {
-      return res.json({ message: `hello ${req.params.name}` });
-    })
-    .get("/status", (_, res) => {
-      return res.json({ ok: true });
-    });
+const main = async () => {
+  const server = fastify({ logger: true });
 
-  return app;
+  // Now we setup our server, plugins and such
+  await server.register(fastifyCors, { origin: '*' });
+  await server.register(fastifyJWT, {
+    secret: process.env.JWT_SECRET,
+  });
+  await server.register(fastifySupabase, {
+    url: process.env.SUPABASE_URL,
+    anonKey: process.env.SUPABASE_ANON_KEY,
+    serviceKey: process.env.SUPABASE_SERVICE_KEY,
+    options: {},
+  });
+
+  server.decorate('authenticate', async function (request: FastifyRequest, reply: FastifyReply) {
+    try {
+      await request.jwtVerify();
+    } catch (err) {
+      reply.send(err);
+    }
+  });
+
+  // Json Schemas
+  server.addSchema(paginationSchema);
+  server.addSchema(paramIdSchema);
+  server.addSchema(messageSchema);
+  server.addSchema(errorSchema);
+
+  server.addSchema(recipeSchema);
+
+  // API Endpoint routes
+  await server.register(
+    async (api) => {
+      api.register(recipesRoutes, { prefix: '/recipes' });
+    },
+    { prefix: '/api/v1' },
+  );
+
+  return server;
 };
+
+export { main };
