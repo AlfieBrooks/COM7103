@@ -3,7 +3,7 @@ import fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
 import fastifyJWT from '@fastify/jwt';
 import fastifySupabase from '@psteinroe/fastify-supabase';
-import { recipesRoutes } from './api/recipes/recipes.route';
+import { recipesRoutes } from './api/recipes.route';
 import { recipeSchema } from './utils/models.schema';
 import { errorSchema, messageSchema, paginationSchema, paramIdSchema } from './utils/common.schema';
 

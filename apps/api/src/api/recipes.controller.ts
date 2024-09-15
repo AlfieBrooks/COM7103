@@ -1,4 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
+import { getRabbitMQInstance } from '../utils/rabbitmq-setup';
 
 export async function getRecipes(request: FastifyRequest<CrudAllRequest>, reply: FastifyReply) {
   const { from, to } = request.query;
@@ -80,6 +81,15 @@ export async function createRecipe(request: FastifyRequest<PostRecipe>, reply: F
       userId: request.supabaseUser.sub,
     })
     .select();
+
+  const message = {
+    id: data?.[0].id,
+    title: request.body.title,
+    ingredients: request.body.ingredients
+  };
+
+  const channel = await getRabbitMQInstance();
+  channel.sendToQueue('recipe_image_queue', Buffer.from(JSON.stringify(message)));
 
   return reply.status(201).send({ data, error });
 }
