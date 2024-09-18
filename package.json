@@ -4,6 +4,8 @@
     "build": "turbo run build",
     "clean": "turbo run clean",
     "dev": "turbo run dev",
+    "docker:build": "docker-compose build",
+    "docker:start": "docker-compose up",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
     "test": "turbo run test",
@@ -15,7 +17,7 @@
   },
   "packageManager": "pnpm@8.15.6",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
-  "name": "kitchen-sink"
+  "name": "com7103"
 }
