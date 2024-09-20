@@ -1,62 +1,46 @@
 import React from 'react';
-import { Card, Text, Group, Center } from '@mantine/core';
+import { Card, Text, Loader, Flex } from '@mantine/core';
 import { Link } from '@tanstack/react-router';
 import classes from './card.module.css';
 
-export function ImageCard({
-  id,
-  title,
-  author,
-  image,
-  date,
-}: {
-  id: string;
-  title: string;
-  author?: string;
-  image?: string;
-  date: Date;
-}): JSX.Element {
+interface ImageCardProps {
+  readonly id: string;
+  readonly title: string;
+  readonly author?: string;
+  readonly image?: string;
+  readonly date: Date;
+  readonly isPending?: boolean;
+}
+
+export function ImageCard({ id, title, image, date, isPending }: ImageCardProps): JSX.Element {
+  const imageSrc = image ?? `${import.meta.env.VITE_IMAGE_URL}/recipe-image/${id}`;
   return (
-    <Card
-      p="lg"
-      shadow="lg"
-      className={classes.card}
-      radius="md"
-      component={Link}
-      href={`/recipes/${id}`}
-      target="_blank"
-    >
+    <Card p="lg" shadow="lg" className={classes.card} radius="md" component={Link} to={`/recipes/${id}`}>
       <div
         className={classes.image}
         style={{
-          backgroundImage: `url(${image ?? 'https://placehold.co/600x280'})`,
+          backgroundImage: `url(${imageSrc ?? '/placeholder.png'})`,
         }}
       />
       <div className={classes.overlay} />
 
       <div className={classes.content}>
-        <div>
-          <Text size="lg" c="white" fw={500}>
-            {title}
-          </Text>
+        <Flex direction="row" w="100%" justify="space-between">
+          <Flex direction="column">
+            <Text size="lg" c="white" fw={500}>
+              {title}
+            </Text>
+            <Text size="sm" c="dimmed">
+              {new Date(date).toDateString()}
+            </Text>
+          </Flex>
 
-          <Group justify="space-between" gap="xs">
-            {author && (
-              <Text size="sm" c="dimmed">
-                {author}
-              </Text>
-            )}
-
-            <Group gap="lg">
-              <Center>
-                {/* <IconEye style={{ width: rem(16), height: rem(16) }} stroke={1.5} color={theme.colors.dark[2]} /> */}
-                <Text size="sm" c="dimmed">
-                  {new Date(date).toDateString()}
-                </Text>
-              </Center>
-            </Group>
-          </Group>
-        </div>
+          {isPending && (
+            <Flex align="flex-end">
+              <Loader size="lg" />
+            </Flex>
+          )}
+        </Flex>
       </div>
     </Card>
   );

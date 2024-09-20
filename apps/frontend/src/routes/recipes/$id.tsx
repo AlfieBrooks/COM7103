@@ -1,8 +1,8 @@
 import React from 'react';
 import { Container, Title } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
-import { CardGrid } from '../../components/grid';
 import { getRecipe } from '../../queries/get-recipe';
+import { RecipeDetails } from '../../components/recipe';
 
 export const Route = createFileRoute('/recipes/$id')({
   component: Recipe,
@@ -15,8 +15,8 @@ function Recipe(): JSX.Element {
 
   return (
     <Container>
-      <Title order={2}>Homepage</Title>
-      <CardGrid recipes={recipe.data} />
+      {/* <Title order={2}></Title> */}
+      <RecipeDetails recipe={recipe.data} />
     </Container>
   );
 }

@@ -75,12 +75,54 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({
-  IndexRoute,
-  RecipesIdRoute,
-  RecipesCreateRoute,
-  RecipesMineRoute,
-})
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/recipes/$id': typeof RecipesIdRoute
+  '/recipes/create': typeof RecipesCreateRoute
+  '/recipes/mine': typeof RecipesMineRoute
+}
+
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/recipes/$id': typeof RecipesIdRoute
+  '/recipes/create': typeof RecipesCreateRoute
+  '/recipes/mine': typeof RecipesMineRoute
+}
+
+export interface FileRoutesById {
+  __root__: typeof rootRoute
+  '/': typeof IndexRoute
+  '/recipes/$id': typeof RecipesIdRoute
+  '/recipes/create': typeof RecipesCreateRoute
+  '/recipes/mine': typeof RecipesMineRoute
+}
+
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '/recipes/$id' | '/recipes/create' | '/recipes/mine'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/recipes/$id' | '/recipes/create' | '/recipes/mine'
+  id: '__root__' | '/' | '/recipes/$id' | '/recipes/create' | '/recipes/mine'
+  fileRoutesById: FileRoutesById
+}
+
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  RecipesIdRoute: typeof RecipesIdRoute
+  RecipesCreateRoute: typeof RecipesCreateRoute
+  RecipesMineRoute: typeof RecipesMineRoute
+}
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  RecipesIdRoute: RecipesIdRoute,
+  RecipesCreateRoute: RecipesCreateRoute,
+  RecipesMineRoute: RecipesMineRoute,
+}
+
+export const routeTree = rootRoute
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
 /* prettier-ignore-end */
 

@@ -1,15 +1,15 @@
 services:
-  # rabbitmq:
-  #   image: rabbitmq:3-management-alpine
-  #   container_name: 'rabbitmq'
-  #   ports:
-  #     - 5672:5672
-  #     - 15672:15672
-  #   volumes:
-  #     - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
-  #     - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
-  #   networks:
-  #     - shared
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - shared
 
   # frontend:
   #   build:
@@ -23,19 +23,19 @@ services:
   #   networks:
   #     - shared
 
-  api:
-    build:
-      context: .
-      dockerfile: ./apps/api/Dockerfile
-      args:
-        PROJECT: api
-    container_name: 'api'
-    ports:
-      - 5000:5000
-    volumes:
-      - .:/app
-    networks:
-      - shared
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/api/Dockerfile
+  #     args:
+  #       PROJECT: api
+  #   container_name: 'api'
+  #   ports:
+  #     - 5000:5000
+  #   volumes:
+  #     - .:/app
+  #   networks:
+  #     - shared
 
   # image-generator:
   #   build:

@@ -1,12 +1,15 @@
 import React from 'react';
 import { Container, Title } from '@mantine/core';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, ErrorComponent } from '@tanstack/react-router';
 import { CardGrid } from '../components/grid';
 import { getRecipes } from '../queries/get-recipes';
 
 export const Route = createFileRoute('/')({
   component: Index,
   loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(getRecipes),
+  errorComponent: ({ error }) => {
+    return <ErrorComponent error={error} />;
+  },
 });
 
 function Index(): JSX.Element {

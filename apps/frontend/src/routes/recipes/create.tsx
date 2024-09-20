@@ -1,9 +1,10 @@
 import React from 'react';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { Container, TextInput, Textarea, Group, Title, Button, TagsInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useMutation } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import { notifications } from '@mantine/notifications';
 
 export const Route = createFileRoute('/recipes/create')({
   beforeLoad: ({ context, location }) => {
@@ -21,6 +22,8 @@ export const Route = createFileRoute('/recipes/create')({
 
 function Create(): JSX.Element {
   const token = Route.useRouteContext().auth?.access_token;
+  const navigate = useNavigate({ from: '/recipes/create' });
+  const queryClient = useQueryClient();
   const form = useForm({
     initialValues: {
       title: '',
@@ -36,15 +39,29 @@ function Create(): JSX.Element {
 
   const { mutateAsync } = useMutation({
     mutationFn: async (recipe: typeof form.values) => {
-      try {
-        return await axios.post(`${import.meta.env.VITE_API_URL}/recipes`, recipe, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } catch (error) {
-        throw new Error('Failed to create recipe');
-      }
+      return await axios.post(`${import.meta.env.VITE_API_URL}/recipes`, recipe, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    },
+    onSuccess: () => {
+      form.reset();
+      queryClient.invalidateQueries({ queryKey: ['userRecipes'] });
+      notifications.show({
+        title: 'Success!',
+        message: 'Recipe created successfully',
+        color: 'teal',
+      });
+      navigate({ to: '/recipes/mine' });
+    },
+    onError: (error) => {
+      console.error(error);
+      notifications.show({
+        title: 'Whoops! We ran into a problem',
+        message: 'Failed to create recipe, please try again later',
+        color: 'red',
+      });
     },
   });
 

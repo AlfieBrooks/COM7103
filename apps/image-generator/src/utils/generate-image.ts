@@ -15,7 +15,7 @@ export async function generateImage({ title, ingredients }: { title: string; ing
       }
     );
 
-    const buffer = Buffer.from(response.data, 'binary');
+    const buffer = Buffer.from(response.data, 'base64');
     return buffer;
   } catch (error) {
     if (axios.isAxiosError(error)) {

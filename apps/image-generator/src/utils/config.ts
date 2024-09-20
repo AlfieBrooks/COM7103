@@ -8,7 +8,9 @@ export const config = {
   },
   supabase: {
     url: process.env.SUPABASE_URL!,
-    key: process.env.SUPABASE_KEY!,
+    anonKey: process.env.SUPABASE_ANON_KEY!,
+    serviceKey: process.env.SUPABASE_SERVICE_KEY!,
+    jwtSecret: process.env.JWT_SECRET!,
     bucketName: 'recipe_images',
   },
 };

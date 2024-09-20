@@ -17,7 +17,7 @@ class ImageGenerationConsumer {
   private supabase: ReturnType<typeof createClient>;
 
   constructor() {
-    this.supabase = createClient(config.supabase.url, config.supabase.key);
+    this.supabase = createClient(config.supabase.url, config.supabase.serviceKey);
   }
 
   async start(): Promise<void> {
@@ -26,7 +26,7 @@ class ImageGenerationConsumer {
       await this.setupQueues();
       await this.consume();
     } catch (error) {
-      logger.error('Failed to start consumer:', error);
+      logger.error(error, 'Failed to start consumer');
       await this.cleanup();
     }
   }
@@ -59,7 +59,7 @@ class ImageGenerationConsumer {
     await this.channel.consume(config.rabbitmq.queueName, (msg) => {
       if (msg !== null) {
         void this.processMessage(msg).catch(error => {
-          logger.error('Error processing message:', error);
+          logger.error(error, 'Error processing message');
         });
       }
     });
@@ -112,17 +112,17 @@ class ImageGenerationConsumer {
     if (!this.channel) throw new Error('Channel not initialised');
 
     if (error instanceof Error) {
-      logger.error('Error processing message:', error);
+      logger.error(error, 'Error processing message');
 
       if (error.message === "Rate limit exceeded") {
         logger.info(`Rate limit hit. Requeueing message for recipe "${recipeId}" with delay`);
         this.requeueWithDelay(msg);
       } else {
-        logger.error('Unhandled error:', error);
+        logger.error(error, 'Unhandled error occurred');
         this.channel.ack(msg);
       }
     } else {
-      logger.error('Unknown error occurred:', error);
+      logger.error(error, 'Unknown error occurred');
       this.channel.ack(msg);
     }
   }

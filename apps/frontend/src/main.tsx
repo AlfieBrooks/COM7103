@@ -4,12 +4,14 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import { createClient, Session } from '@supabase/supabase-js';
+import { Auth } from '@supabase/auth-ui-react';
+import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { routeTree } from './routeTree.gen';
 
 import '@mantine/core/styles.css';
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
+import '@mantine/notifications/styles.css';
 
 const queryClient = new QueryClient();
 
@@ -59,6 +61,7 @@ function AppWithAuth(): JSX.Element {
 function App(): JSX.Element {
   return (
     <MantineProvider>
+      <Notifications />
       <QueryClientProvider client={queryClient}>
         <AppWithAuth />
         <ReactQueryDevtools buttonPosition="bottom-right" />

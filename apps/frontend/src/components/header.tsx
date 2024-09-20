@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Container, Group, Burger, Button, Title, Avatar } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Link } from '@tanstack/react-router';
 import { IconCherry } from '@tabler/icons-react';
-
-import classes from './header.module.css';
+import { UserMetadata } from '@supabase/supabase-js';
 import { supabase } from '../main';
+import classes from './header.module.css';
 
 const links = [
   { link: '/', label: 'Home', authProtected: false },
-  { link: '/recipes', label: 'Recipes', authProtected: false },
   { link: '/recipes/mine', label: 'My Recipes', authProtected: true },
   { link: '/recipes/create', label: 'Create', authProtected: true },
 ];
 
-export function Header({ user }: { user: {} }): JSX.Element {
+interface HeaderProps {
+  readonly user?: UserMetadata;
+}
+
+export function Header({ user }: HeaderProps): JSX.Element {
   const [opened, { toggle }] = useDisclosure(false);
-  const [active, setActive] = useState(links[0].link);
 
   // const signIn = async () => {
   //   const { error } = await supabase.auth.signOut();
@@ -29,15 +31,7 @@ export function Header({ user }: { user: {} }): JSX.Element {
   };
 
   const items = links.map((link) => (
-    <Link
-      key={link.label}
-      to={link.link}
-      className={classes.link}
-      data-active={active === link.link || undefined}
-      onClick={() => {
-        setActive(link.link);
-      }}
-    >
+    <Link key={link.label} to={link.link} className={classes.link} activeOptions={{ exact: true }}>
       {link.label}
     </Link>
   ));
