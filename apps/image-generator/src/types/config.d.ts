@@ -14,7 +14,6 @@ declare module 'fastify' {
 
   export interface FastifyInstance {
     supabaseClient: SupabaseClient;
-    authenticate: FastifyMiddleware;
     config: {
       NODE_ENV: 'development' | 'production';
       PORT: number;

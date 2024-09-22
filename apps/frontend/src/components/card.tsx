@@ -1,26 +1,22 @@
 import React from 'react';
-import { Card, Text, Loader, Flex } from '@mantine/core';
+import { Card, Text, Loader, Flex, Image } from '@mantine/core';
 import { Link } from '@tanstack/react-router';
 import classes from './card.module.css';
 
 interface ImageCardProps {
   readonly id: string;
   readonly title: string;
-  readonly author?: string;
-  readonly image?: string;
   readonly date: Date;
   readonly isPending?: boolean;
 }
 
-export function ImageCard({ id, title, image, date, isPending }: ImageCardProps): JSX.Element {
-  const imageSrc = image ?? `${import.meta.env.VITE_IMAGE_URL}/recipe-image/${id}`;
+export function ImageCard({ id, title, date, isPending }: ImageCardProps): JSX.Element {
   return (
     <Card p="lg" shadow="lg" className={classes.card} radius="md" component={Link} to={`/recipes/${id}`}>
-      <div
+      <Image
         className={classes.image}
-        style={{
-          backgroundImage: `url(${imageSrc ?? '/placeholder.png'})`,
-        }}
+        src={`${import.meta.env.VITE_IMAGE_URL}/recipe-image/${id}`}
+        fallbackSrc="/placeholder.png"
       />
       <div className={classes.overlay} />
 

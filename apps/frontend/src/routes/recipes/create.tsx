@@ -21,9 +21,9 @@ export const Route = createFileRoute('/recipes/create')({
 });
 
 function Create(): JSX.Element {
+  const queryClient = useQueryClient();
   const token = Route.useRouteContext().auth?.access_token;
   const navigate = useNavigate({ from: '/recipes/create' });
-  const queryClient = useQueryClient();
   const form = useForm({
     initialValues: {
       title: '',
@@ -48,6 +48,7 @@ function Create(): JSX.Element {
     onSuccess: () => {
       form.reset();
       queryClient.invalidateQueries({ queryKey: ['userRecipes'] });
+      queryClient.invalidateQueries({ queryKey: ['checkImageStatus'] });
       notifications.show({
         title: 'Success!',
         message: 'Recipe created successfully',

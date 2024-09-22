@@ -1,10 +1,10 @@
 import React from 'react';
 import { SimpleGrid, Container } from '@mantine/core';
 import { ImageCard } from './card';
-import { CustomRecipe } from '../types/recipes';
+import { Recipe } from '../types/recipes';
 
 type RecipeList = {
-  recipes: readonly CustomRecipe[];
+  recipes: readonly Recipe[];
 };
 
 export function CardGrid({ recipes }: RecipeList): JSX.Element {
@@ -13,7 +13,6 @@ export function CardGrid({ recipes }: RecipeList): JSX.Element {
       key={recipe.id}
       id={recipe.id}
       title={recipe.title}
-      image={recipe.image}
       date={recipe.createdAt}
       isPending={recipe.isPending}
     />

@@ -3,6 +3,7 @@ import { Container, Title } from '@mantine/core';
 import { createFileRoute, ErrorComponent } from '@tanstack/react-router';
 import { CardGrid } from '../components/grid';
 import { getRecipes } from '../queries/get-recipes';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -13,8 +14,9 @@ export const Route = createFileRoute('/')({
 });
 
 function Index(): JSX.Element {
-  const { data: recipes } = Route.useLoaderData();
-  console.log('Log ~ Index ~ recipes:', recipes);
+  const {
+    data: { data: recipes },
+  } = useSuspenseQuery(getRecipes);
 
   return (
     <Container>

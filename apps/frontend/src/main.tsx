@@ -38,7 +38,6 @@ function AppWithAuth(): JSX.Element {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Log ~ AppWithAuth ~ session:', session);
       setSession(session);
     });
 

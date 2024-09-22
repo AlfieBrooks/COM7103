@@ -1,17 +1,18 @@
-import type { FastifyReply, FastifyRequest } from 'fastify';
 import fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
+import fastifyEtag from '@fastify/etag';
 import fastifyJWT from '@fastify/jwt';
 import fastifySupabase from '@psteinroe/fastify-supabase';
 import { recipeImageRoutes } from './api/recipe-image.route';
 import { errorSchema, messageSchema, paginationSchema, paramIdSchema } from './utils/common.schema';
 import { startConsumer } from './consumer';
 import { config } from './utils/config';
+import { logger } from './utils/logger';
 
 const main = async () => {
   await startConsumer();
 
-  const server = fastify({ logger: true });
+  const server = fastify({ logger });
 
   await server.register(fastifyCors, { origin: '*' });
   await server.register(fastifyJWT, {
@@ -23,14 +24,7 @@ const main = async () => {
     serviceKey: config.supabase.serviceKey,
     options: {},
   });
-
-  server.decorate('authenticate', async function (request: FastifyRequest, reply: FastifyReply) {
-    try {
-      await request.jwtVerify();
-    } catch (err) {
-      reply.send(err);
-    }
-  });
+  await server.register(fastifyEtag);
 
   // Json Schemas
   server.addSchema(paginationSchema);

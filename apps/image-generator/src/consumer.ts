@@ -18,10 +18,12 @@ class ImageGenerationConsumer {
 
   constructor() {
     this.supabase = createClient(config.supabase.url, config.supabase.serviceKey);
+    logger.info('Supabase client created');
   }
 
   async start(): Promise<void> {
     try {
+      logger.info('Starting consumer');
       await this.connect();
       await this.setupQueues();
       await this.consume();
@@ -32,15 +34,20 @@ class ImageGenerationConsumer {
   }
 
   private async connect(): Promise<void> {
+    logger.info('Connecting to RabbitMQ');
     this.connection = await connect(config.rabbitmq.url);
     this.channel = await this.connection.createChannel();
+    logger.info('RabbitMQ connection and channel established');
   }
 
   private async setupQueues(): Promise<void> {
     if (!this.channel) throw new Error('Channel not initialised');
 
+    logger.info('Setting up queues');
     await this.channel.assertQueue(config.rabbitmq.queueName, { durable: true });
+    logger.info(`Queue ${config.rabbitmq.queueName} asserted`);
     await this.channel.assertExchange(config.rabbitmq.delayExchange, 'direct', { durable: true });
+    logger.info(`Exchange ${config.rabbitmq.delayExchange} asserted`);
     await this.channel.assertQueue(config.rabbitmq.delayQueue, {
       durable: true,
       arguments: {
@@ -48,7 +55,9 @@ class ImageGenerationConsumer {
         'x-dead-letter-routing-key': config.rabbitmq.queueName,
       },
     });
+    logger.info(`Delay queue ${config.rabbitmq.delayQueue} asserted`);
     await this.channel.bindQueue(config.rabbitmq.delayQueue, config.rabbitmq.delayExchange, 'delay');
+    logger.info(`Queue ${config.rabbitmq.delayQueue} bound to exchange ${config.rabbitmq.delayExchange}`);
   }
 
   private async consume(): Promise<void> {
@@ -58,6 +67,7 @@ class ImageGenerationConsumer {
 
     await this.channel.consume(config.rabbitmq.queueName, (msg) => {
       if (msg !== null) {
+        logger.info(`Received message: ${msg.content.toString()}`);
         void this.processMessage(msg).catch(error => {
           logger.error(error, 'Error processing message');
         });
@@ -70,11 +80,12 @@ class ImageGenerationConsumer {
 
     const content = JSON.parse(msg.content.toString()) as RecipeMessage;
     const { id, title, ingredients } = content;
+    logger.info(`Processing message with id: ${id}, title: ${title}`);
 
     try {
       const imageBuffer = await generateImage({ title, ingredients });
-      const imageUrl = await this.uploadImageToSupabase(id, imageBuffer);
-      await this.updateRecipeWithImageUrl(id, imageUrl);
+      await this.uploadToStorage(id, imageBuffer);
+      await this.insertToDatabase(id);
 
       logger.info(`Image generated for recipe ${id}`);
       this.channel.ack(msg);
@@ -83,29 +94,27 @@ class ImageGenerationConsumer {
     }
   }
 
-  private async uploadImageToSupabase(recipeId: string, imageBuffer: Buffer): Promise<string> {
-    const { error } = await this.supabase.storage
+  private async uploadToStorage(recipeId: string, imageBuffer: Buffer): Promise<void> {
+    const { error: storageError } = await this.supabase.storage
       .from(config.supabase.bucketName)
       .upload(`${recipeId}.png`, imageBuffer, {
         contentType: 'image/png',
       });
 
-    if (error) throw error;
+    if (storageError) throw storageError;
 
-    const { data: { publicUrl } } = this.supabase.storage
-      .from(config.supabase.bucketName)
-      .getPublicUrl(`${recipeId}.png`);
-
-    return publicUrl;
+    logger.info(`Recipe ${recipeId} uploaded to Supabase storage`);
   }
 
-  private async updateRecipeWithImageUrl(recipeId: string, imageUrl: string): Promise<void> {
-    const { error } = await this.supabase
+  private async insertToDatabase(recipeId: string): Promise<void> {
+    const { error: dbError } = await this.supabase
       .from('recipe_images')
-      .insert({ id: recipeId, imageUrl })
+      .insert({ id: recipeId })
       .select();
 
-    if (error) throw error;
+    if (dbError) throw dbError;
+
+    logger.info(`Recipe ${recipeId} created in database`);
   }
 
   private handleProcessingError(error: unknown, recipeId: string, msg: ConsumeMessage): void {
@@ -137,8 +146,17 @@ class ImageGenerationConsumer {
   }
 
   private async cleanup(): Promise<void> {
-    if (this.channel) await this.channel.close();
-    if (this.connection) await this.connection.close();
+    if (this.channel) {
+      await this.channel.close();
+      logger.info('RabbitMQ channel closed');
+    }
+
+    if (this.connection) {
+      await this.connection.close();
+      logger.info('RabbitMQ connection closed');
+    }
+
+    throw new Error('Consumer failed to start');
   }
 }
 

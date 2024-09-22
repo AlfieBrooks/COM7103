@@ -1,7 +1,6 @@
-export interface CustomRecipe extends Recipe {
-  isPending?: boolean;
-  image?: string;
-}
+// export interface CustomRecipe extends Recipe {
+//   image?: string;
+// }
 
 export interface Recipe {
   id: string;
@@ -10,4 +9,5 @@ export interface Recipe {
   updatedAt?: Date;
   ingredients: string[];
   instructions: string;
+  isPending?: boolean;
 }

@@ -14,9 +14,10 @@ export async function getRecipeImage(request: FastifyRequest<CrudIdRequest>, rep
 
     return reply.header('Content-Type', 'image/png').status(200).send(image);
   } catch (error) {
-    const placeholderImage = fs.readFileSync('./src/assets/placeholder.png');
-    const image = Buffer.from(placeholderImage);
-    return reply.header('Content-Type', 'image/png').status(404).send(image);
+    // const placeholderImage = fs.readFileSync('./src/assets/placeholder.png');
+    // const image = Buffer.from(placeholderImage);
+    // return reply.header('Content-Type', 'image/png').status(404).send(image);
+    return reply.status(404).send({ message: 'Image not found' });
   }
 }
 

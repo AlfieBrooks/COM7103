@@ -1,26 +1,31 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
+import fastifyEtag from '@fastify/etag';
 import fastifyJWT from '@fastify/jwt';
 import fastifySupabase from '@psteinroe/fastify-supabase';
 import { recipesRoutes } from './api/recipes.route';
-import { recipeSchema } from './utils/models.schema';
+import { recipeSchema, userRecipeSchema } from './utils/models.schema';
 import { errorSchema, messageSchema, paginationSchema, paramIdSchema } from './utils/common.schema';
+import { logger } from './utils/logger';
+import { config } from './utils/config';
 
 const main = async () => {
-  const server = fastify({ logger: true });
+  const server = fastify({ logger });
 
   // Now we setup our server, plugins and such
   await server.register(fastifyCors, { origin: '*' });
   await server.register(fastifyJWT, {
-    secret: process.env.JWT_SECRET,
+    secret: config.supabase.jwtSecret,
   });
   await server.register(fastifySupabase, {
-    url: process.env.SUPABASE_URL,
-    anonKey: process.env.SUPABASE_ANON_KEY,
-    serviceKey: process.env.SUPABASE_SERVICE_KEY,
+    url: config.supabase.url,
+    anonKey: config.supabase.anonKey,
+    serviceKey: config.supabase.serviceKey,
     options: {},
   });
+  await server.register(fastifyEtag);
+
 
   server.decorate('authenticate', async function (request: FastifyRequest, reply: FastifyReply) {
     try {
@@ -37,6 +42,7 @@ const main = async () => {
   server.addSchema(errorSchema);
 
   server.addSchema(recipeSchema);
+  server.addSchema(userRecipeSchema);
 
   // API Endpoint routes
   await server.register(

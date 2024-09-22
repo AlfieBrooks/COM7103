@@ -13,7 +13,10 @@
 .image {
   position: absolute;
   inset: 0;
+  width: 100%;
+  background-position: center;
   background-size: cover;
+  object-fit: fill;
   transition: transform 500ms ease;
 }
 

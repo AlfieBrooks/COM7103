@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Title, Text, Center, Loader } from '@mantine/core';
-import { createFileRoute, ErrorComponent, redirect } from '@tanstack/react-router';
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { createFileRoute, Link, redirect } from '@tanstack/react-router';
+import { QueryClient, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { CardGrid } from '../../components/grid';
-import { getUserRecipes } from '../../queries/get-user-recipes';
-import { CustomRecipe } from '../../types/recipes';
-
-interface Result {
-  recipe: CustomRecipe;
-  isCompleted: boolean;
-}
+import { RecipeResponse } from '../../queries/get-user-recipes';
+import { Recipe } from '../../types/recipes';
 
 export const Route = createFileRoute('/recipes/mine')({
   beforeLoad: ({ context, location }) => {
@@ -23,83 +18,47 @@ export const Route = createFileRoute('/recipes/mine')({
       });
     }
   },
-  loader: ({ context: { queryClient, auth } }) => queryClient.ensureQueryData(getUserRecipes(auth.access_token)),
   component: MyRecipes,
-  errorComponent: ({ error }) => {
-    return <ErrorComponent error={error} />;
+  errorComponent: () => {
+    return (
+      <Container>
+        <Title order={2}>No Recipes Found</Title>
+        <Link to="/recipes/create">Create a new recipe</Link>
+      </Container>
+    );
   },
 });
 
-const fetchImageStatus = async (recipeId: string) => {
-  const imageUrl = `${import.meta.env.VITE_IMAGE_URL}/recipe-image/${recipeId}`;
-  try {
-    const response = await axios.get(imageUrl, { responseType: 'blob' });
-    const image = URL.createObjectURL(response.data);
-    return { image, isCompleted: true };
-  } catch (error) {
-    return { image: null, isCompleted: false };
-  }
-};
-
 function MyRecipes(): JSX.Element {
+  const [pendingRecipes, setPendingRecipes] = useState<Recipe[]>([]);
+  const [completedRecipes, setCompletedRecipes] = useState<Recipe[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { auth } = Route.useRouteContext();
-  const {
-    data: { data: recipes },
-  } = useSuspenseQuery(getUserRecipes(auth.access_token));
-  console.log('Log ~ MyRecipes ~ recipes:', recipes);
-
-  const [pendingRecipes, setPendingRecipes] = useState<CustomRecipe[]>([]);
-  const [completedRecipes, setCompletedRecipes] = useState<CustomRecipe[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    console.log('Log ~ useEffect ~ recipes?.data:', recipes?.data);
-    if (recipes?.data) {
-      setPendingRecipes(recipes.data);
-      setIsLoading(true);
-    }
-  }, [recipes]);
-
-  const { data, isSuccess } = useQuery<Result[], Error>({
-    queryKey: ['checkImageStatus'],
+  const { data: recipeResponse } = useQuery({
+    queryKey: ['getUserRecipes'],
     queryFn: async () => {
-      const results = await Promise.all(
-        pendingRecipes.map(async (recipe) => {
-          const { image, isCompleted } = await fetchImageStatus(recipe.id);
-
-          let modifiedRecipe = recipe;
-          if (image) {
-            modifiedRecipe = { ...recipe, image, isPending: false };
-          } else {
-            modifiedRecipe = { ...recipe, isPending: true };
-          }
-          return { recipe: modifiedRecipe, isCompleted };
-        }),
-      );
-      return results;
+      const response = await axios.get<RecipeResponse>(`${import.meta.env.VITE_API_URL}/recipes/user`, {
+        headers: {
+          Authorization: `Bearer ${auth.access_token}`,
+        },
+      });
+      return response;
     },
-    refetchInterval: 10000, // Poll every 10 seconds
-    enabled: pendingRecipes.length > 0,
+    refetchInterval: pendingRecipes.length > 0 ? 10000 : 0, // Poll every 10 seconds
   });
 
   useEffect(() => {
-    if (isSuccess && data) {
-      const completed = data.filter((result) => result.isCompleted).map((result) => result.recipe);
-      const submitted = data.filter((result) => !result.isCompleted).map((result) => result.recipe);
-
-      setCompletedRecipes((prev) => {
-        const uniqueRecipes = new Set([...prev, ...completed]);
-        return Array.from(uniqueRecipes);
-      });
-      setPendingRecipes(submitted);
+    const recipes = recipeResponse?.data.data;
+    if (recipes) {
+      setPendingRecipes(recipes.filter((recipe) => recipe.isPending));
+      setCompletedRecipes(recipes.filter((recipe) => !recipe.isPending));
       setIsLoading(false);
     }
-  }, [isSuccess, data]);
+  }, [recipeResponse]);
 
   return (
     <Container>
-      <Title order={2}>My Recipes{recipes.count ? ` (${recipes.count})` : ''}</Title>
-      {/* <CardGrid recipes={recipes.data} /> */}
+      <Title order={2}>My Recipes{recipeResponse?.data.count ? ` (${recipeResponse?.data.count})` : ''}</Title>
       {isLoading && (
         <Center>
           <Loader size="lg" />

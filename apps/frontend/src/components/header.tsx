@@ -22,12 +22,10 @@ export function Header({ user }: HeaderProps): JSX.Element {
 
   // const signIn = async () => {
   //   const { error } = await supabase.auth.signOut();
-  //   console.log("Log ~ signOut ~ error:", error);
   // };
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
-    console.log('Log ~ signOut ~ error:', error);
   };
 
   const items = links.map((link) => (

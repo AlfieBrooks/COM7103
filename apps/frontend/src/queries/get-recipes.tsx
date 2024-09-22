@@ -5,7 +5,7 @@ export const getRecipes = queryOptions({
   queryKey: ['recipes'],
   queryFn: async () => {
     try {
-      return axios.get(`${import.meta.env.VITE_API_URL}/recipes`);
+      return await axios.get(`${import.meta.env.VITE_API_URL}/recipes`);
     } catch (error) {
       throw new Error('Failed to fetch recipes');
     }

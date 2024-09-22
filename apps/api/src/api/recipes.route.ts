@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { createRecipe, deleteRecipe, getRecipes, getRecipe, getUserRecipes, updateRecipe } from './recipes.controller';
-import { createSchema, deleteSchema, getAllSchema, getSchema, updateSchema } from './recipes.schema';
+import { createSchema, deleteSchema, getAllSchema, getAllUserSchema, getSchema, updateSchema } from './recipes.schema';
 
 export const recipesRoutes = async (fastify: FastifyInstance) => {
   // List all Recipes, paginated
@@ -10,7 +10,7 @@ export const recipesRoutes = async (fastify: FastifyInstance) => {
   fastify.get('/:id', { schema: getSchema }, getRecipe);
 
   // List all of a given users Recipes
-  fastify.get('/user', { schema: getAllSchema, onRequest: [fastify.authenticate] }, getUserRecipes);
+  fastify.get('/user', { schema: getAllUserSchema, onRequest: [fastify.authenticate] }, getUserRecipes);
 
   // Deleting a Recipe
   fastify.delete('/:id', { schema: deleteSchema, onRequest: [fastify.authenticate] }, deleteRecipe);

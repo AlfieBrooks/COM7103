@@ -27,6 +27,24 @@ export const getAllSchema = {
   },
 };
 
+// GET /user
+export const getAllUserSchema = {
+  querystring: { $ref: 'paginationSchema' },
+  tags: ['recipes'],
+  description: 'List all the users recipes, paginated using a cursor paginator.',
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        data: { type: 'array', items: { $ref: 'userRecipeSchema#' } },
+        count: { type: 'number' },
+        error: { $ref: 'errorResponseSchema#' },
+      },
+    },
+    404: { $ref: 'messageResponseSchema#' },
+  },
+};
+
 // GET '/:id'
 export const getSchema = {
   params: { $ref: 'paramIdSchema' },

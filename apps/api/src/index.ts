@@ -1,5 +1,6 @@
 import { main } from './server';
 import { gracefullyShutdown, unexpectedErrorHandler } from './utils/exit-handler';
+import { logger } from './utils/logger';
 
 main()
   .then((app) => {
@@ -33,6 +34,6 @@ main()
       });
   })
   .catch((err) => {
-    console.log(err);
+    logger.error(err, 'Failed to start server');
     process.exit(1);
   });

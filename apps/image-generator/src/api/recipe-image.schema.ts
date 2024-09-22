@@ -22,6 +22,13 @@ export const getSchema = {
         type: 'image/png'
       },
     },
+    // 404: {
+    //   type: 'string',
+    //   media: {
+    //     binaryEncoding: 'base64',
+    //     type: 'image/png'
+    //   },
+    // },
     404: { $ref: 'messageResponseSchema#' },
   },
 };
