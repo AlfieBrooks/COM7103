@@ -9,7 +9,7 @@ interface RecipeDetailsProps {
 
 export function RecipeDetails({ recipe }: RecipeDetailsProps): JSX.Element {
   const { id, title, createdAt: date, ingredients, instructions } = recipe;
-  const imageUrl = `${import.meta.env.VITE_IMAGE_URL}/recipe-image/${id}`;
+  const imageUrl = `${import.meta.env.VITE_IMAGE_API_URL}/recipe-image/${id}`;
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>

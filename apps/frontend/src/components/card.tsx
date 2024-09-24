@@ -15,7 +15,7 @@ export function ImageCard({ id, title, date, isPending }: ImageCardProps): JSX.E
     <Card p="lg" shadow="lg" className={classes.card} radius="md" component={Link} to={`/recipes/${id}`}>
       <Image
         className={classes.image}
-        src={`${import.meta.env.VITE_IMAGE_URL}/recipe-image/${id}`}
+        src={`${import.meta.env.VITE_IMAGE_API_URL}/recipe-image/${id}`}
         fallbackSrc="/placeholder.png"
       />
       <div className={classes.overlay} />

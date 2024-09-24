@@ -7,7 +7,7 @@ ARG NODE_VERSION=20
 # 1. Alpine image
 FROM node:${NODE_VERSION}-alpine AS alpine
 RUN apk update
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat curl
 
 # Setup pnpm and turbo on the alpine base
 FROM alpine as base

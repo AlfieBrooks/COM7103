@@ -52,6 +52,10 @@ const main = async () => {
     { prefix: '/api/v1' },
   );
 
+  server.get('/health', async (_request, reply) => {
+    reply.send({ status: 'ok' });
+  });
+
   return server;
 };
 

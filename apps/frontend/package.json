@@ -6,6 +6,7 @@
     "build": "vite build",
     "clean": "rm -rf dist",
     "dev": "vite --host 0.0.0.0 --port 3000 --clearScreen false",
+    "serve": "serve -s dist -p 3000",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/"
   },
@@ -22,7 +23,8 @@
     "@tanstack/react-router": "^1.50.0",
     "axios": "^1.7.7",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "serve": "^14.2.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

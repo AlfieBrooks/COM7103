@@ -2,6 +2,8 @@ node_modules
 **/node_modules
 .git
 .gitignore
+out
 *.md
 dist
 %localappdata%
+.env
