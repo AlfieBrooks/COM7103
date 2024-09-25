@@ -1,6 +1,8 @@
+import { logger } from '@repo/logger';
+
 import { main } from './server';
 import { gracefullyShutdown, unexpectedErrorHandler } from './utils/exit-handler';
-import { logger } from './utils/logger';
+import { config } from './utils/config';
 
 main()
   .then((app) => {
@@ -17,16 +19,18 @@ main()
       gracefullyShutdown(app);
     });
 
+    const { port, host } = config;
+
     app
-      .listen({ port: process.env.PORT, host: process.env.HOST })
+      .listen({ port, host })
       .then((_) => {
         app.log.info('Ready, Waiting for connections...');
       })
       .catch((err) => {
         app.log.error(
           {
-            host: process.env.HOST,
-            port: process.env.PORT,
+            host,
+            port,
             error: err.message,
           },
           'Failed to start server',

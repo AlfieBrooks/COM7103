@@ -1,8 +1,8 @@
 import type { Channel, ConsumeMessage, Connection } from 'amqplib';
 import { connect } from 'amqplib';
 import { createClient } from '@supabase/supabase-js';
+import { logger } from '@repo/logger';
 import { generateImage } from "./utils/generate-image";
-import { logger } from './utils/logger';
 import { config } from './utils/config';
 
 interface RecipeMessage {

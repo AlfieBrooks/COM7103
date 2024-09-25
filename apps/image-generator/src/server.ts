@@ -3,11 +3,11 @@ import fastifyCors from '@fastify/cors';
 import fastifyEtag from '@fastify/etag';
 import fastifyJWT from '@fastify/jwt';
 import fastifySupabase from '@psteinroe/fastify-supabase';
+import { logger } from '@repo/logger';
 import { recipeImageRoutes } from './api/recipe-image.route';
 import { errorSchema, messageSchema, paginationSchema, paramIdSchema } from './utils/common.schema';
 import { startConsumer } from './consumer';
 import { config } from './utils/config';
-import { logger } from './utils/logger';
 
 const main = async () => {
   await startConsumer();

@@ -4,11 +4,11 @@ import fastifyCors from '@fastify/cors';
 import fastifyEtag from '@fastify/etag';
 import fastifyJWT from '@fastify/jwt';
 import fastifySupabase from '@psteinroe/fastify-supabase';
+import { logger } from '@repo/logger';
+import { config } from './utils/config';
 import { recipesRoutes } from './api/recipes.route';
 import { recipeSchema, userRecipeSchema } from './utils/models.schema';
 import { errorSchema, messageSchema, paginationSchema, paramIdSchema } from './utils/common.schema';
-import { logger } from './utils/logger';
-import { config } from './utils/config';
 
 const main = async () => {
   const server = fastify({ logger });
@@ -21,7 +21,7 @@ const main = async () => {
   await server.register(fastifySupabase, {
     url: config.supabase.url,
     anonKey: config.supabase.anonKey,
-    serviceKey: config.supabase.serviceKey,
+    serviceKey: config.supabase.anonKey,
     options: {},
   });
   await server.register(fastifyEtag);

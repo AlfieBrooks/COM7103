@@ -50,22 +50,16 @@ WORKDIR /app
 RUN pnpm --filter=$PROJECT deploy --prod --ignore-scripts --no-optional /dependencies
 
 # 5. Final image - runner stage to run the application
-FROM base AS runner
+FROM nginx:1.25.4-alpine3.18 AS runner
 ARG APP_DIRNAME
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nodejs
-USER nodejs
 
 WORKDIR /app
 
 ENV NODE_ENV production
 
-COPY --from=builder --chown=nodejs:nodejs /app/apps/${APP_DIRNAME} .
-COPY --from=dependencies --chown=nodejs:nodejs /dependencies/node_modules ./node_modules
+COPY --from=builder /app/apps/${APP_DIRNAME}/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/apps/${APP_DIRNAME}/dist /var/www/html/
 
 EXPOSE 3000
 
-# Start Nginx when the container runs
-# CMD ["nginx", "-g", "daemon off;"]
-# CMD ["serve", "-s", "app/dist"]
-CMD ["npm", "run", "serve"]
+ENTRYPOINT ["nginx","-g","daemon off;"]

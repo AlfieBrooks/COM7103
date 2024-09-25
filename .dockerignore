@@ -6,4 +6,4 @@ out
 *.md
 dist
 %localappdata%
-.env
+**/.env.local
