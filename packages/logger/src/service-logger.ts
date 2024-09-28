@@ -12,7 +12,7 @@ const loggerEnvMap = {
     },
   },
   production: {
-    level: 'warn',
+    level: 'info',
   },
   test: {
     enabled: false,

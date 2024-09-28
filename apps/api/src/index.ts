@@ -1,8 +1,11 @@
 import { logger } from '@repo/logger';
+import { collectDefaultMetrics } from 'prom-client';
 
 import { main } from './server';
 import { gracefullyShutdown, unexpectedErrorHandler } from './utils/exit-handler';
 import { config } from './utils/config';
+
+collectDefaultMetrics();
 
 main()
   .then((app) => {

@@ -1,0 +1,20 @@
+groups:
+- name: autoscaling
+  rules:
+  - alert: HighCPUUsage
+    expr: avg(rate(process_cpu_seconds_total{job="api"}[5m])) > 0.01
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: High CPU usage detected
+      description: API service is experiencing high CPU usage (> 1%)
+
+  - alert: HighRequestRate
+    expr: sum(rate(http_requests_total{job="api"}[5m])) > 5
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: High request rate detected
+      description: API service is experiencing high request rate (> 5 req/s)

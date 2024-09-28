@@ -14,3 +14,4 @@ public/dist
 Bruno
 %localappdata%
 out
+__pycache__

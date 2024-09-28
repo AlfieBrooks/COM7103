@@ -5,6 +5,7 @@ import fastifyEtag from '@fastify/etag';
 import fastifyJWT from '@fastify/jwt';
 import fastifySupabase from '@psteinroe/fastify-supabase';
 import { logger } from '@repo/logger';
+import { register } from 'prom-client';
 import { config } from './utils/config';
 import { recipesRoutes } from './api/recipes.route';
 import { recipeSchema, userRecipeSchema } from './utils/models.schema';
@@ -21,7 +22,7 @@ const main = async () => {
   await server.register(fastifySupabase, {
     url: config.supabase.url,
     anonKey: config.supabase.anonKey,
-    serviceKey: config.supabase.anonKey,
+    serviceKey: config.supabase.serviceKey,
     options: {},
   });
   await server.register(fastifyEtag);
@@ -54,6 +55,14 @@ const main = async () => {
 
   server.get('/health', async (_request, reply) => {
     reply.send({ status: 'ok' });
+  });
+
+  server.get('/metrics', async (_request, reply) => {
+    try {
+      reply.header('Content-Type', register.contentType).send(await register.metrics());
+    } catch (err) {
+      reply.status(500).send(err);
+    }
   });
 
   return server;
