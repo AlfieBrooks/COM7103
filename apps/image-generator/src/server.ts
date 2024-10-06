@@ -2,9 +2,9 @@ import fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
 import fastifyEtag from '@fastify/etag';
 import fastifyJWT from '@fastify/jwt';
+import fastifyMetrics from 'fastify-metrics';
 import fastifySupabase from '@psteinroe/fastify-supabase';
 import { logger } from '@repo/logger';
-import { register } from 'prom-client';
 import { recipeImageRoutes } from './api/recipe-image.route';
 import { errorSchema, messageSchema, paginationSchema, paramIdSchema } from './utils/common.schema';
 import { startConsumer } from './consumer';
@@ -26,6 +26,7 @@ const main = async () => {
     options: {},
   });
   await server.register(fastifyEtag);
+  await server.register(fastifyMetrics, { endpoint: '/metrics' });
 
   // Json Schemas
   server.addSchema(paginationSchema);
@@ -43,14 +44,6 @@ const main = async () => {
 
   server.get('/health', async (_request, reply) => {
     reply.send({ status: 'ok' });
-  });
-
-  server.get('/metrics', async (_request, reply) => {
-    try {
-      reply.header('Content-Type', register.contentType).send(await register.metrics());
-    } catch (err) {
-      reply.status(500).send(err);
-    }
   });
 
   return server;

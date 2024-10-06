@@ -1,11 +1,13 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import fastify from 'fastify';
+import fastifyCaching from '@fastify/caching';
 import fastifyCors from '@fastify/cors';
 import fastifyEtag from '@fastify/etag';
 import fastifyJWT from '@fastify/jwt';
+// import fastifyRateLimit from '@fastify/rate-limit';
+import fastifyMetrics from 'fastify-metrics';
 import fastifySupabase from '@psteinroe/fastify-supabase';
 import { logger } from '@repo/logger';
-import { register } from 'prom-client';
 import { config } from './utils/config';
 import { recipesRoutes } from './api/recipes.route';
 import { recipeSchema, userRecipeSchema } from './utils/models.schema';
@@ -26,6 +28,16 @@ const main = async () => {
     options: {},
   });
   await server.register(fastifyEtag);
+  await server.register(fastifyCaching, {
+    privacy: fastifyCaching.privacy.PUBLIC,
+    expiresIn: 5
+  });
+  await server.register(fastifyMetrics, { endpoint: '/metrics' });
+
+  // await server.register(fastifyRateLimit, {
+  //   max: 100,
+  //   timeWindow: '1 minute'
+  // })
 
 
   server.decorate('authenticate', async function (request: FastifyRequest, reply: FastifyReply) {
@@ -55,14 +67,6 @@ const main = async () => {
 
   server.get('/health', async (_request, reply) => {
     reply.send({ status: 'ok' });
-  });
-
-  server.get('/metrics', async (_request, reply) => {
-    try {
-      reply.header('Content-Type', register.contentType).send(await register.metrics());
-    } catch (err) {
-      reply.status(500).send(err);
-    }
   });
 
   return server;

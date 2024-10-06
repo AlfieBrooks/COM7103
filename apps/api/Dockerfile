@@ -10,7 +10,7 @@ RUN apk update
 RUN apk add --no-cache libc6-compat curl
 
 # Setup pnpm and turbo on the alpine base
-FROM alpine as base
+FROM alpine AS base
 RUN corepack enable
 RUN npm install turbo --global
 RUN pnpm config set store-dir ~/.pnpm-store

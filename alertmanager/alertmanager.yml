@@ -8,4 +8,4 @@ route:
 receivers:
   - name: "autoscaler"
     webhook_configs:
-      - url: "http://autoscaler:5050/scale"
+      - url: "http://host.docker.internal:5050/scale"

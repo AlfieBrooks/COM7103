@@ -1,20 +1,46 @@
 groups:
-- name: autoscaling
-  rules:
-  - alert: HighCPUUsage
-    expr: avg(rate(process_cpu_seconds_total{job="api"}[5m])) > 0.01
-    for: 2m
-    labels:
-      severity: warning
-    annotations:
-      summary: High CPU usage detected
-      description: API service is experiencing high CPU usage (> 1%)
+  - name: autoscaling
+    rules:
+      - alert: ApiHighCPUUsage
+        expr: avg(rate(process_cpu_seconds_total{job="api"}[1m])) > 0.1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: High CPU usage detected
+          description: api service is experiencing high CPU usage (> 80%)
+          service: "api"
+          replicas: "2"
 
-  - alert: HighRequestRate
-    expr: sum(rate(http_requests_total{job="api"}[5m])) > 5
-    for: 2m
-    labels:
-      severity: warning
-    annotations:
-      summary: High request rate detected
-      description: API service is experiencing high request rate (> 5 req/s)
+      - alert: ApiHighRequestRate
+        expr: sum(rate(nodejs_active_requests_total{job="api"}[1m])) > 100
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: High request rate detected
+          description: api service is experiencing high request rate (> 10 req/s)
+          service: "api"
+          replicas: "2"
+
+      - alert: ImageGeneratorHighCPUUsage
+        expr: avg(rate(process_cpu_seconds_total{job="image-generator"}[1m])) > 0.1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: High CPU usage detected
+          description: image-generator service is experiencing high CPU usage (> 80%)
+          service: "image-generator"
+          replicas: "2"
+
+      - alert: ImageGeneratorHighRequestRate
+        expr: sum(rate(nodejs_active_requests_total{job="image-generator"}[1m])) > 10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: High request rate detected
+          description: image-generator service is experiencing high request rate (> 100 req/s)
+          service: "image-generator"
+          replicas: "2"

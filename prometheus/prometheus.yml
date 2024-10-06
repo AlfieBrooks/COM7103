@@ -28,7 +28,12 @@ scrape_configs:
         target_label: __address__
         replacement: ${1}:${2}
 
-  - job_name: "nodejs"
+  - job_name: "api"
     static_configs:
-      - targets: ["api:5000", "image-generator:4000"]
+      - targets: ["api:5000"]
+    metrics_path: "/metrics"
+
+  - job_name: "image-generator"
+    static_configs:
+      - targets: ["image-generator:4000"]
     metrics_path: "/metrics"

@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+// import fs from 'node:fs';
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import axios from 'axios';
 import { config } from '../utils/config';
@@ -6,7 +6,6 @@ import { CustomError } from '../utils/custom-error';
 
 export async function getRecipeImage(request: FastifyRequest<CrudIdRequest>, reply: FastifyReply): Promise<void> {
   const { id } = request.params;
-
   try {
     await checkRecipeImageExists(request, id);
     const signedUrl = await getSignedImageUrl(request, id);

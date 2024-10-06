@@ -1,40 +1,45 @@
-# Turborepo kitchen sink starter
+# COM7103
 
-This is an official starter Turborepo with multiple meta-frameworks all working in harmony and sharing packages.
+## Project Overview
 
-This example also shows how to use [Workspace Configurations](https://turbo.build/repo/docs/core-concepts/monorepos/configuring-workspaces).
+This project is a recipe management system for a Uni module on Distributed Systems. It allows users to create, read, update, and delete recipes, which can in turn utilise RabbitMQ to queue messages to a second microservice that will call an API to generate an AI image for that recipe.
 
-## Using this example
+## Prerequisites
 
-Run the following command:
+- Node 20
+- Python 3
+- Docker
+- Supabase account and projects
+- HuggingFace account
 
-```sh
-npx create-turbo@latest -e kitchen-sink
-```
+## Installation
 
-## What's inside?
+1. Clone the repository
+2. Install the dependencies
 
-This Turborepo includes the following packages and apps:
+   ```sh
+   pnpm install
+   ```
 
-### Apps and Packages
+3. Duplicate the `.env-example` in each of the services folders, rename to `.env` and add the service credentials
+4. Create and active the python virtual env in the `autoscaler` folder
 
-- `api`: an [Express](https://expressjs.com/) server
-- `storefront`: a [Next.js](https://nextjs.org/) app
-- `admin`: a [Vite](https://vitejs.dev/) single page app
-- `blog`: a [Remix](https://remix.run/) blog
-- `@repo/eslint-config`: ESLint configurations used throughout the monorepo
-- `@repo/jest-presets`: Jest configurations
-- `@repo/logger`: isomorphic logger (a small wrapper around console.log)
-- `@repo/ui`: a dummy React UI library (which contains `<CounterButton>` and `<Link>` components)
-- `@repo/typescript-config`: tsconfig.json's used throughout the monorepo
+   ```sh
+   python -m venv venv && source venv/bin/activate
+   ```
 
-Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
+5. Install the python dependencies
 
-### Utilities
+   ```sh
+   pip install -r requirements.txt
+   ```
 
-This Turborepo has some additional tools already setup for you:
+## Running the System
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Jest](https://jestjs.io) test runner for all things JavaScript
-- [Prettier](https://prettier.io) for code formatting
+1. Run the start command to start the docker compose stack and autoscaler service
+
+   ```sh
+   pnpm run start
+   ```
+
+2. The frontend will be running at `http://localhost`.
