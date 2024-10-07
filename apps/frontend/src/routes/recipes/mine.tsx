@@ -34,7 +34,7 @@ function MyRecipes(): JSX.Element {
   const [completedRecipes, setCompletedRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { auth } = Route.useRouteContext();
-  const { data: recipeResponse } = useQuery({
+  const { data: recipeResponse, error } = useQuery({
     queryKey: ['getUserRecipes'],
     queryFn: async () => {
       const response = await axios.get<RecipeResponse>(`${import.meta.env.VITE_API_URL}/recipes/user`, {
@@ -49,12 +49,12 @@ function MyRecipes(): JSX.Element {
 
   useEffect(() => {
     const recipes = recipeResponse?.data.data;
-    if (recipes) {
+    if (recipes && recipes.length > 0) {
       setPendingRecipes(recipes.filter((recipe) => recipe.isPending));
       setCompletedRecipes(recipes.filter((recipe) => !recipe.isPending));
-      setIsLoading(false);
     }
-  }, [recipeResponse]);
+    setIsLoading(false);
+  }, [recipeResponse, error]);
 
   return (
     <Container>
@@ -64,6 +64,7 @@ function MyRecipes(): JSX.Element {
           <Loader size="lg" />
         </Center>
       )}
+      {error && <Text>No recipes found</Text>}
       {!isLoading && (
         <div>
           <Title order={2} mt="md">
